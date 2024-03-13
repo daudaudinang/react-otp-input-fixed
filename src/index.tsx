@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React from 'react';
 
 type AllowedInputTypes = 'password' | 'text' | 'number' | 'tel';
@@ -70,7 +71,7 @@ const OTPInput = ({
   const [activeInput, setActiveInput] = React.useState(0);
   const inputRefs = React.useRef<Array<HTMLInputElement | null>>([]);
 
-  const getOTPValue = () => (value ? value.toString().split('') : []);
+  const getOTPValue = () => (value ? value.toString().split(',') : []);
 
   const isInputNum = inputType === 'number' || inputType === 'tel';
 
@@ -102,12 +103,15 @@ const OTPInput = ({
     return isTypeValid && value.trim().length === 1;
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const { value } = event.target;
 
     if (isInputValueValid(value)) {
+      setActiveInput(index);
+      // focusInput(index);
       changeCodeAtFocus(value);
-      focusInput(activeInput + 1);
+      focusInput(index + 1);
+      // focusInput(activeInput + 1);
     }
   };
 
@@ -199,7 +203,7 @@ const OTPInput = ({
   };
 
   const handleOTPChange = (otp: Array<string>) => {
-    const otpValue = otp.join('');
+    const otpValue = otp.join(',');
     onChange(otpValue);
   };
 
@@ -245,7 +249,7 @@ const OTPInput = ({
               value: getOTPValue()[index] ?? '',
               placeholder: getPlaceholderValue()?.[index] ?? undefined,
               ref: (element) => (inputRefs.current[index] = element),
-              onChange: handleChange,
+              onChange: (e) => handleChange(e, index),
               onFocus: (event) => handleFocus(event)(index),
               onBlur: handleBlur,
               onKeyDown: handleKeyDown,
